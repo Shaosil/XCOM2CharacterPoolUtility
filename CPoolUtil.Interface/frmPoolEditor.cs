@@ -657,7 +657,7 @@ namespace CPoolUtil.Interface
 
             // Don't mark edited for replacing -1s with 0s or nulls with "None"s
             return !(oldVal is int oInt && oInt == -1 && newVal is int nInt && nInt == 0) 
-                && !(oldVal is string oStr && oStr == null && newVal is string nStr && nStr == "None");
+                && !(oldVal == null && newVal is string nStr && nStr == "None");
         }
 
         #endregion
