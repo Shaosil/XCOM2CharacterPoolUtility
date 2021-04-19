@@ -1,0 +1,12 @@
+KevlarArmor_DLC_Day0=Resistance Warrior Kevlar Armor
+DLC_0_Hat_A_FloppyBoonie_M=Floppy Bonnie
+DLC_0_Hat_A_FloppyBoonie_F=Floppy Bonnie
+DLC_0_Hood_A_Simple_M=Long Hood
+DLC_0_Hood_A_Simple_F=Long Hood
+DLC_0_Hood_B_SkiMask_M=Ski Mask
+DLC_0_Hood_B_SkiMask_F=Ski Mask
+Facepaint_BLANK=None
+Facepaint_Arid=Arid
+Facepaint_Eyeblack=Eye Black
+Facepaint_SharpShooter=Sharpshooter
+Facepaint_Skull=Skull

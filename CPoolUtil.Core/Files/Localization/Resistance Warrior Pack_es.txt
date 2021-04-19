@@ -1,0 +1,12 @@
+KevlarArmor_DLC_Day0=Blindaje de Kevlar de guerrero de la resistencia
+DLC_0_Hat_A_FloppyBoonie_M=Sombrero blando militar
+DLC_0_Hat_A_FloppyBoonie_F=Sombrero blando militar
+DLC_0_Hood_A_Simple_M=Capuchón
+DLC_0_Hood_A_Simple_F=Capuchón
+DLC_0_Hood_B_SkiMask_M=Pasamontañas
+DLC_0_Hood_B_SkiMask_F=Pasamontañas
+Facepaint_BLANK=Nada
+Facepaint_Arid=Árido
+Facepaint_Eyeblack=Ojo negro
+Facepaint_SharpShooter=Tirador
+Facepaint_Skull=Cráneo

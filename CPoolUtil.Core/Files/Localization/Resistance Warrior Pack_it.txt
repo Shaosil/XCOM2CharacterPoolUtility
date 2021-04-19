@@ -1,0 +1,12 @@
+KevlarArmor_DLC_Day0=Armatura in kevlar guerrigliero della Resistenza
+DLC_0_Hat_A_FloppyBoonie_M=Cappello a tesa morbida
+DLC_0_Hat_A_FloppyBoonie_F=Cappello a tesa morbida
+DLC_0_Hood_A_Simple_M=Cappuccio lungo
+DLC_0_Hood_A_Simple_F=Cappuccio lungo
+DLC_0_Hood_B_SkiMask_M=Passamontagna
+DLC_0_Hood_B_SkiMask_F=Passamontagna
+Facepaint_BLANK=Nessuna
+Facepaint_Arid=Arida
+Facepaint_Eyeblack=Occhio nero
+Facepaint_SharpShooter=Tiratore scelto
+Facepaint_Skull=Teschio

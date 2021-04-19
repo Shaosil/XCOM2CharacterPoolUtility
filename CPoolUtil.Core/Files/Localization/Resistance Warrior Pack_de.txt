@@ -1,0 +1,12 @@
+KevlarArmor_DLC_Day0=Widerstandskämpfer-Kevlar-Rüstung
+DLC_0_Hat_A_FloppyBoonie_M=Schlapphut
+DLC_0_Hat_A_FloppyBoonie_F=Schlapphut
+DLC_0_Hood_A_Simple_M=Lange Kapuze
+DLC_0_Hood_A_Simple_F=Lange Kapuze
+DLC_0_Hood_B_SkiMask_M=Sturmhaube
+DLC_0_Hood_B_SkiMask_F=Sturmhaube
+Facepaint_BLANK=Ohne
+Facepaint_Arid=Wüste
+Facepaint_Eyeblack=Schwarze Augen
+Facepaint_SharpShooter=Scharfschütze
+Facepaint_Skull=Schädel

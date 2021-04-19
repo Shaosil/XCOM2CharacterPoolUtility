@@ -1,0 +1,12 @@
+KevlarArmor_DLC_Day0=Кевларовый бронежилет бойца Сопротивления
+DLC_0_Hat_A_FloppyBoonie_M=Шляпа с полями
+DLC_0_Hat_A_FloppyBoonie_F=Шляпа с полями
+DLC_0_Hood_A_Simple_M=Длинный капюшон
+DLC_0_Hood_A_Simple_F=Длинный капюшон
+DLC_0_Hood_B_SkiMask_M=Лыжная маска
+DLC_0_Hood_B_SkiMask_F=Лыжная маска
+Facepaint_BLANK=Нет
+Facepaint_Arid=Пустыня
+Facepaint_Eyeblack=Черный глаз
+Facepaint_SharpShooter=Снайпер
+Facepaint_Skull=Череп

@@ -1,0 +1,12 @@
+KevlarArmor_DLC_Day0=저항군 전사 케블러 방어구
+DLC_0_Hat_A_FloppyBoonie_M=플로피 보니
+DLC_0_Hat_A_FloppyBoonie_F=플로피 보니
+DLC_0_Hood_A_Simple_M=롱 후드
+DLC_0_Hood_A_Simple_F=롱 후드
+DLC_0_Hood_B_SkiMask_M=스키 마스크
+DLC_0_Hood_B_SkiMask_F=스키 마스크
+Facepaint_BLANK=없음
+Facepaint_Arid=위장
+Facepaint_Eyeblack=아이블랙
+Facepaint_SharpShooter=저격병
+Facepaint_Skull=해골

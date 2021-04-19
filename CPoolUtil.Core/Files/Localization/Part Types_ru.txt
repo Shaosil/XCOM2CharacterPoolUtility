@@ -1,0 +1,12 @@
+Arms=Руки
+Torso=Торс
+Legs=Ноги
+LeftArm=Левая рука
+RightArm=Правая рука
+LeftArmDeco=Левое плечо
+RightArmDeco=Правое плечо
+LeftForearm=Левое предплечье
+RightForearm=Правое предплечье
+Thighs=Бедра
+Shins=Голени
+TorsoDeco=Обвес торса

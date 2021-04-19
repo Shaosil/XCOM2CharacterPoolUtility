@@ -1,0 +1,12 @@
+Arms=팔
+Torso=몸통
+Legs=다리
+LeftArm=왼팔
+RightArm=오른팔
+LeftArmDeco=왼쪽 어깨
+RightArmDeco=오른쪽 어깨
+LeftForearm=왼쪽 팔뚝
+RightForearm=오른쪽 팔뚝
+Thighs=허벅지
+Shins=Shin
+TorsoDeco=몸통 장비

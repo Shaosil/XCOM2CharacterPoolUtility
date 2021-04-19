@@ -1,0 +1,12 @@
+Arms=Bras
+Torso=Torse
+Legs=Jambes
+LeftArm=Bras gauche
+RightArm=Bras droit
+LeftArmDeco=Épaule gauche
+RightArmDeco=Épaule droite
+LeftForearm=Avant-bras gauche
+RightForearm=Avant-bras droit
+Thighs=Cuisses
+Shins=Tibias
+TorsoDeco=Équipement torse

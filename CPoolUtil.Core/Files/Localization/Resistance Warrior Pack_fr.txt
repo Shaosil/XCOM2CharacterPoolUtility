@@ -1,0 +1,12 @@
+KevlarArmor_DLC_Day0=Armure en kevlar de guerrier de la résistance
+DLC_0_Hat_A_FloppyBoonie_M=Bob
+DLC_0_Hat_A_FloppyBoonie_F=Bob
+DLC_0_Hood_A_Simple_M=Grande capuche
+DLC_0_Hood_A_Simple_F=Grande capuche
+DLC_0_Hood_B_SkiMask_M=Masque de ski
+DLC_0_Hood_B_SkiMask_F=Masque de ski
+Facepaint_BLANK=Rien
+Facepaint_Arid=Aride
+Facepaint_Eyeblack=Yeux noirs
+Facepaint_SharpShooter=Tireur d'élite
+Facepaint_Skull=Tête de mort

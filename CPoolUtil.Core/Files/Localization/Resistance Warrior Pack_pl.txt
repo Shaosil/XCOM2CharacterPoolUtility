@@ -1,0 +1,12 @@
+KevlarArmor_DLC_Day0=Pancerz kevlarowy wojownika ruchu oporu
+DLC_0_Hat_A_FloppyBoonie_M=Miękki kapelusz polowy
+DLC_0_Hat_A_FloppyBoonie_F=Miękki kapelusz polowy
+DLC_0_Hood_A_Simple_M=Długi kaptur
+DLC_0_Hood_A_Simple_F=Długi kaptur
+DLC_0_Hood_B_SkiMask_M=Kominiarka
+DLC_0_Hood_B_SkiMask_F=Kominiarka
+Facepaint_BLANK=Brak
+Facepaint_Arid=Spękany
+Facepaint_Eyeblack=Czarne oczy
+Facepaint_SharpShooter=Strzelec wyborowy
+Facepaint_Skull=Czaszka

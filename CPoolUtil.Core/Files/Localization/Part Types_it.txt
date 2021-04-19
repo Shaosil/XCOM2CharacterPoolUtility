@@ -1,0 +1,12 @@
+Arms=Braccia
+Torso=Torace
+Legs=Gambe
+LeftArm=Braccio sinistro
+RightArm=Braccio destro
+LeftArmDeco=Spalla sinistra
+RightArmDeco=Spalla destra
+LeftForearm=Avambraccio sinistro
+RightForearm=Avambraccio destro
+Thighs=Cosce
+Shins=Stinchi
+TorsoDeco=Elementi torace

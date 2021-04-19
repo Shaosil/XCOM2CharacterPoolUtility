@@ -1,0 +1,12 @@
+Arms=Ręce
+Torso=Korpus
+Legs=Nogi
+LeftArm=Lewa ręka
+RightArm=Prawa ręka
+LeftArmDeco=Lewe ramię
+RightArmDeco=Prawe ramię
+LeftForearm=Lewe przedramię
+RightForearm=Prawe przedramię
+Thighs=Uda
+Shins=Golenie
+TorsoDeco=Wyposażenie na korpus

@@ -1,0 +1,12 @@
+Arms=腕
+Torso=胴体
+Legs=脚
+LeftArm=左腕
+RightArm=右腕
+LeftArmDeco=左肩
+RightArmDeco=右肩
+LeftForearm=左前腕
+RightForearm=右前腕
+Thighs=もも
+Shins=すね
+TorsoDeco=胴体用装備

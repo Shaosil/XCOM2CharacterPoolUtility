@@ -1,0 +1,12 @@
+Arms=Arme
+Torso=Körper
+Legs=Beine
+LeftArm=Linker Arm
+RightArm=Rechter Arm
+LeftArmDeco=Linke Schulter
+RightArmDeco=Rechte Schulter
+LeftForearm=Linker Unterarm
+RightForearm=Rechter Unterarm
+Thighs=Oberschenkel
+Shins=Schienbeine
+TorsoDeco=Torso-Ausrüstung

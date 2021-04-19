@@ -1,0 +1,12 @@
+Arms=Arms
+Torso=Torso
+Legs=Legs
+LeftArm=Left Arm
+RightArm=Right Arm
+LeftArmDeco=Left Shoulder
+RightArmDeco=Right Shoulder
+LeftForearm=Left Forearm
+RightForearm=Right Forearm
+Thighs=Thighs
+Shins=Shins
+TorsoDeco=Torso Gear

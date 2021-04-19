@@ -1,0 +1,12 @@
+Arms=Brazos
+Torso=Torso
+Legs=Piernas
+LeftArm=Brazo izquierdo
+RightArm=Brazo derecho
+LeftArmDeco=Hombro izquierdo
+RightArmDeco=Hombro derecho
+LeftForearm=Antebrazo izquierdo
+RightForearm=Antebrazo derecho
+Thighs=Muslos
+Shins=Espinillas
+TorsoDeco=Equipo del torso

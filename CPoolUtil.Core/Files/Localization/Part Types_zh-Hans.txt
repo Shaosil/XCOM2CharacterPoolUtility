@@ -1,0 +1,12 @@
+Arms=双臂
+Torso=躯干
+Legs=双脚
+LeftArm=左臂
+RightArm=右臂
+LeftArmDeco=左肩
+RightArmDeco=右肩
+LeftForearm=左前臂
+RightForearm=右前臂
+Thighs=大腿
+Shins=护胫
+TorsoDeco=躯干装备

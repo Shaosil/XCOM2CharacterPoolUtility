@@ -1,0 +1,12 @@
+KevlarArmor_DLC_Day0=レジスタンス兵用ケブラーアーマー
+DLC_0_Hat_A_FloppyBoonie_M=フロッピー・ボニー
+DLC_0_Hat_A_FloppyBoonie_F=フロッピー・ボニー
+DLC_0_Hood_A_Simple_M=ロングフード
+DLC_0_Hood_A_Simple_F=ロングフード
+DLC_0_Hood_B_SkiMask_M=スキーマスク
+DLC_0_Hood_B_SkiMask_F=スキーマスク
+Facepaint_BLANK=なし
+Facepaint_Arid=アリッド
+Facepaint_Eyeblack=アイブラック
+Facepaint_SharpShooter=狙撃兵
+Facepaint_Skull=スカル

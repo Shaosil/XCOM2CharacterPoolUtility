@@ -1,0 +1,12 @@
+KevlarArmor_DLC_Day0=反抗軍戰士凱芙拉護甲
+DLC_0_Hat_A_FloppyBoonie_M=邦尼帽
+DLC_0_Hat_A_FloppyBoonie_F=邦尼帽
+DLC_0_Hood_A_Simple_M=長頭巾
+DLC_0_Hood_A_Simple_F=長頭巾
+DLC_0_Hood_B_SkiMask_M=滑雪面罩
+DLC_0_Hood_B_SkiMask_F=滑雪面罩
+Facepaint_BLANK=無
+Facepaint_Arid=皸裂
+Facepaint_Eyeblack=眼窩黑漆
+Facepaint_SharpShooter=神槍手
+Facepaint_Skull=骷髏
