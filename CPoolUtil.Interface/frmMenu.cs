@@ -77,8 +77,7 @@ namespace CPoolUtil.Interface
                         }
 
                     // 0 will be interpreted as no new versions available
-                    if (displayInfoMessages)
-                        bw.ReportProgress(0);
+                    bw.ReportProgress(displayInfoMessages ? 0 : -1);
                 }
                 catch (Exception ex)
                 {
