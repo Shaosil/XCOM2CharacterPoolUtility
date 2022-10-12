@@ -35,6 +35,10 @@ namespace CPoolUtil.Interface
             this.btnCreatePool = new System.Windows.Forms.Button();
             this.lblVersion = new System.Windows.Forms.Label();
             this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.mnuItemFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuItemFileExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuItemEdit = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuItemEditSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuItemAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAboutUpdates = new System.Windows.Forms.ToolStripMenuItem();
             this.lblUpdateStatus = new System.Windows.Forms.Label();
@@ -83,12 +87,44 @@ namespace CPoolUtil.Interface
             // mainMenuStrip
             // 
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuItemFile,
+            this.mnuItemEdit,
             this.mnuItemAbout});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
             this.mainMenuStrip.Size = new System.Drawing.Size(404, 24);
             this.mainMenuStrip.TabIndex = 2;
             this.mainMenuStrip.Text = "menuStrip1";
+            // 
+            // mnuItemFile
+            // 
+            this.mnuItemFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuItemFileExit});
+            this.mnuItemFile.Name = "mnuItemFile";
+            this.mnuItemFile.Size = new System.Drawing.Size(37, 20);
+            this.mnuItemFile.Text = "File";
+            // 
+            // mnuItemFileExit
+            // 
+            this.mnuItemFileExit.Name = "mnuItemFileExit";
+            this.mnuItemFileExit.Size = new System.Drawing.Size(93, 22);
+            this.mnuItemFileExit.Text = "Exit";
+            this.mnuItemFileExit.Click += new System.EventHandler(this.mnuItemFileExit_Click);
+            // 
+            // mnuItemEdit
+            // 
+            this.mnuItemEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuItemEditSettings});
+            this.mnuItemEdit.Name = "mnuItemEdit";
+            this.mnuItemEdit.Size = new System.Drawing.Size(39, 20);
+            this.mnuItemEdit.Text = "Edit";
+            // 
+            // mnuItemEditSettings
+            // 
+            this.mnuItemEditSettings.Name = "mnuItemEditSettings";
+            this.mnuItemEditSettings.Size = new System.Drawing.Size(125, 22);
+            this.mnuItemEditSettings.Text = "Settings...";
+            this.mnuItemEditSettings.Click += new System.EventHandler(this.mnuItemEditSettings_Click);
             // 
             // mnuItemAbout
             // 
@@ -128,6 +164,7 @@ namespace CPoolUtil.Interface
             this.Controls.Add(this.btnCharacterPoolEditor);
             this.Controls.Add(this.btnTemplateBrowser);
             this.Controls.Add(this.mainMenuStrip);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mainMenuStrip;
             this.MaximizeBox = false;
@@ -154,5 +191,9 @@ namespace CPoolUtil.Interface
         private System.Windows.Forms.ToolStripMenuItem mnuItemAbout;
         private System.Windows.Forms.ToolStripMenuItem menuItemAboutUpdates;
         private System.Windows.Forms.Label lblUpdateStatus;
+        private System.Windows.Forms.ToolStripMenuItem mnuItemFile;
+        private System.Windows.Forms.ToolStripMenuItem mnuItemFileExit;
+        private System.Windows.Forms.ToolStripMenuItem mnuItemEdit;
+        private System.Windows.Forms.ToolStripMenuItem mnuItemEditSettings;
     }
 }

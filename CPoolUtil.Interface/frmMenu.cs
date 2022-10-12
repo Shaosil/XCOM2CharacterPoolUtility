@@ -4,7 +4,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CPoolUtil.Interface
@@ -23,6 +22,17 @@ namespace CPoolUtil.Interface
             // Silently check for updates on load
             updateCheckerClient.DefaultRequestHeaders.Add("User-Agent", "Other");
             CheckForUpdatesAsync();
+        }
+
+        private void mnuItemFileExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void mnuItemEditSettings_Click(object sender, EventArgs e)
+        {
+            Settings.Load();
+            new frmSettings().ShowDialog();
         }
 
         private void menuItemAboutUpdates_Click(object sender, EventArgs e)

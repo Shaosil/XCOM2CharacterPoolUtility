@@ -1374,6 +1374,7 @@ namespace CPoolUtil.Interface
             this.Controls.Add(this.btnDeleteSelected);
             this.Controls.Add(this.btnResetCharacter);
             this.DoubleBuffered = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(796, 512);
             this.MinimizeBox = false;

@@ -12,7 +12,6 @@ namespace CPoolUtil.Interface
 {
     public partial class frmPoolEditor : Form
     {
-        private Overlord _overlord;
         private IOutputter _outputter;
         private string[] filesToLoadOnLaunch; // Only used when constructing
 
@@ -30,9 +29,9 @@ namespace CPoolUtil.Interface
             InitializeComponent();
 
             _outputter = outputter;
-            _overlord = new Overlord();
-            _overlord.AppendPool(CPool.Create(_outputter));
-            _overlord.CharacterPool.DuplicateCharactersIgnoredEvent += DuplicateCharactersIgnored_EventHandler;
+            Overlord.ClearPools();
+            Overlord.AppendPool(CPool.Create(_outputter));
+            Overlord.CharacterPool.DuplicateCharactersIgnoredEvent += DuplicateCharactersIgnored_EventHandler;
             UpdateDirtyStatus();
             ToggleCommonControls(true);
         }
@@ -42,7 +41,7 @@ namespace CPoolUtil.Interface
             InitializeComponent();
 
             _outputter = outputter;
-            _overlord = new Overlord();
+            Overlord.ClearPools();
             filesToLoadOnLaunch = poolFiles;
         }
 
@@ -69,16 +68,16 @@ namespace CPoolUtil.Interface
                             lblFormStatus.Invoke((MethodInvoker)delegate { lblFormStatus.Text = $"Loading {_currentFile}... ({progress}%)"; });
                         else
                         {
-                            _overlord.AppendPool(_appendingPool);
+                            Overlord.AppendPool(_appendingPool);
 
                             // Subscribe to our duplicate characters ignored event handler if this is the first time we load a pool
-                            if (_overlord.CharacterPool == _appendingPool)
-                                _overlord.CharacterPool.DuplicateCharactersIgnoredEvent += DuplicateCharactersIgnored_EventHandler;
+                            if (Overlord.CharacterPool == _appendingPool)
+                                Overlord.CharacterPool.DuplicateCharactersIgnoredEvent += DuplicateCharactersIgnored_EventHandler;
 
                             // Make a thread safe call to our GUI components
                             Invoke((MethodInvoker)delegate
                             {
-                                DetectDlcsAndMods(true);
+                                DetectDlcsAndMods(Program.Settings.ShowWarnings);
                                 UpdateDirtyStatus();
                                 RefreshCharacterListDataSource();
                                 ToggleCommonControls(true);
@@ -95,58 +94,59 @@ namespace CPoolUtil.Interface
         private List<string> DetectDlcsAndMods(bool displayMessage = false)
         {
             var detectedStuff = new List<string>();
-            var vanillaTemplateNames = _overlord.Templates.Where(t => t.Origin == "Vanilla").Select(t => t.Name).ToList();
-            var nonVanillaTemplates = _overlord.Templates.Where(t => t.Origin != "Vanilla").ToList();
+            var vanillaTemplateNames = Overlord.Templates.Where(t => t.Origin == "Vanilla").Select(t => t.Name).ToList();
+            var nonVanillaTemplates = Overlord.Templates.Where(t => t.Origin != "Vanilla").ToList();
 
             // Manually check template names against existing character list
-            var soldierTypes = _overlord.CharacterPool.Characters.Select(c => c.SoldierType.Data).Distinct().ToList();
-            var nameTypes = (_overlord.CharacterPool.Characters.Select(c => c.Appearance.Helmet.Data)
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.Haircut.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.Beard.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.FacePropUpper.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.FacePropLower.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.FacePaint.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.Scars.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.ArmorPatterns.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.Torso.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.TorsoDeco.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.Arms.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.LeftArm.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.RightArm.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.LeftForearm.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.RightForearm.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.LeftArmDeco.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.RightArmDeco.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.Tattoo_LeftArm.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.Tattoo_RightArm.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.Legs.Data))
-                .Concat(_overlord.CharacterPool.Characters.Select(c => c.Appearance.Thighs.Data))
+            var soldierTypes = Overlord.CharacterPool.Characters.Select(c => c.SoldierType.Data).Distinct().ToList();
+            var nameTypes = (Overlord.CharacterPool.Characters.Select(c => c.Appearance.Helmet.Data)
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.Haircut.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.Beard.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.FacePropUpper.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.FacePropLower.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.FacePaint.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.Scars.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.ArmorPatterns.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.Torso.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.TorsoDeco.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.Arms.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.LeftArm.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.RightArm.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.LeftForearm.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.RightForearm.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.LeftArmDeco.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.RightArmDeco.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.Tattoo_LeftArm.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.Tattoo_RightArm.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.Legs.Data))
+                .Concat(Overlord.CharacterPool.Characters.Select(c => c.Appearance.Thighs.Data))
                 ).Distinct().Where(nt => nt != null).ToList();
             detectedStuff.AddRange(nonVanillaTemplates.Where(t => ((t.PartType == "Pawn" && t.CharacterTemplate != "Soldier" && soldierTypes.Any(st => st == t.CharacterTemplate))
                 || nameTypes.Any(nt => nt == t.Name))
-                && !vanillaTemplateNames.Contains(t.Name)).Select(t => t.Origin)); // If the name exists in vanilla as well, ignore it
+                && !vanillaTemplateNames.Contains(t.Name)).Select(t => t.Origin).Distinct()); // If the name exists in vanilla as well, ignore it
 
             // Hair and armor color indexes (just detect if the index is outside of the vanilla range. It's not guaranteed that it is THESE specific mods that have expanded that selection)
-            var maxHairSelection = _overlord.CharacterPool.Characters.Count > 0 ? _overlord.CharacterPool.Characters.Max(c => c.Appearance.HairColor.DataVal) : 0;
-            var maxArmorSelection = _overlord.CharacterPool.Characters.Count > 0 ? _overlord.CharacterPool.Characters.Max(c => Math.Max(c.Appearance.ArmorTint1.DataVal, c.Appearance.ArmorTint2.DataVal)) : 0;
-            var maxTattooColor = _overlord.CharacterPool.Characters.Count > 0 ? _overlord.CharacterPool.Characters.Max(c => c.Appearance.TattooTint.DataVal) : 0;
-            var maxWeaponColor = _overlord.CharacterPool.Characters.Count > 0 ? _overlord.CharacterPool.Characters.Max(c => c.Appearance.WeaponTint.DataVal) : 0;
-            var maxVanillaHairSelection = _overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.HairColor).Max(p => p.Index);
-            var maxVanillaArmorSelection = _overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.ArmorColor).Max(p => p.Index);
-            if (!_overlord.DlcAndModOptions.Contains("More Hair Colors") && maxHairSelection > maxVanillaHairSelection)
+            var maxHairSelection = Overlord.CharacterPool.Characters.Count > 0 ? Overlord.CharacterPool.Characters.Max(c => c.Appearance.HairColor.DataVal) : 0;
+            var maxArmorSelection = Overlord.CharacterPool.Characters.Count > 0 ? Overlord.CharacterPool.Characters.Max(c => Math.Max(c.Appearance.ArmorTint1.DataVal, c.Appearance.ArmorTint2.DataVal)) : 0;
+            var maxTattooColor = Overlord.CharacterPool.Characters.Count > 0 ? Overlord.CharacterPool.Characters.Max(c => c.Appearance.TattooTint.DataVal) : 0;
+            var maxWeaponColor = Overlord.CharacterPool.Characters.Count > 0 ? Overlord.CharacterPool.Characters.Max(c => c.Appearance.WeaponTint.DataVal) : 0;
+            var maxVanillaHairSelection = Overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.HairColor).Max(p => p.Index);
+            var maxVanillaArmorSelection = Overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.ArmorColor).Max(p => p.Index);
+            if (!Overlord.DlcAndModOptions.Contains("More Hair Colors") && maxHairSelection > maxVanillaHairSelection)
                 detectedStuff.Add("More Hair Colors");
             // Tattoos and weapons use the same palette as armor
-            if (!_overlord.DlcAndModOptions.Contains("More Armor Colors") && (new[] { maxArmorSelection, maxTattooColor, maxWeaponColor }.Max() > maxVanillaArmorSelection))
+            if (!Overlord.DlcAndModOptions.Contains("More Armor Colors") && (new[] { maxArmorSelection, maxTattooColor, maxWeaponColor }.Max() > maxVanillaArmorSelection))
                 detectedStuff.Add("More Armor Colors");
 
             // Update options with newly detected options to our list
-            var newDetectedStuff = detectedStuff.Distinct().Where(d => !_overlord.DlcAndModOptions.Contains(d)).ToList();
-            var bothLists = _overlord.DlcAndModOptions.Concat(newDetectedStuff).ToList();
-            UpdateDlcAndModInfo(bothLists);
+            var newDetectedStuff = detectedStuff.Distinct().Where(d => !Overlord.DlcAndModOptions.Contains(d)).ToList();
+            var oldStuff = Overlord.DlcAndModOptions.ToList(); // Clone for reference later
+            Overlord.DlcAndModOptions = Overlord.DlcAndModOptions.Concat(newDetectedStuff).Distinct().ToList();
+            UpdateDlcAndModInfo(oldStuff);
 
             // Special case - force WotC if TLE was detected
-            if (bothLists.Contains("Tactical Legacy Pack") && !bothLists.Contains("WotC"))
-                bothLists.Add("WotC");
+            if (Overlord.DlcAndModOptions.Contains("Tactical Legacy Pack") && !Overlord.DlcAndModOptions.Contains("WotC"))
+                Overlord.DlcAndModOptions.Add("WotC");
 
             if (displayMessage && newDetectedStuff.Count > 0)
             {
@@ -157,13 +157,15 @@ namespace CPoolUtil.Interface
                 MessageBox.Show($"The following DLCs and Mods were detected and have been enabled:{sb}", "Detected DLCs/Mods", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Notify sepearately about unknown templates
-                var unknownTypes = nameTypes.Where(nt => !_overlord.Templates.Any(t => t.Name == nt)).ToList();
+                var unknownTypes = nameTypes.Where(nt => !Overlord.Templates.Any(t => t.Name == nt)).ToList();
                 if (unknownTypes.Any())
                 {
-                    var characters = _overlord.CharacterPool.Characters.Where(c => c.Appearance.Properties.Any(p => unknownTypes.Contains(p.Data))).ToList();
+                    var characters = Overlord.CharacterPool.Characters.Where(c => c.Appearance.Properties.Any(p => unknownTypes.Contains(p.Data))).ToList();
 
-                    sb = new StringBuilder("Unknown templates detected! This usually means one or more characters are using mods NOT yet supported by this program, and those parts WILL BE REPLACED when viewing them (for now).");
+                    sb = new StringBuilder();
+                    sb.AppendLine("Unknown templates detected! This means one or more characters are using parts NOT yet supported by this program, So if you choose a DIFFERENT part, you will lose the original modded one.");
                     sb.AppendLine();
+                    sb.AppendLine("The affected parts will still save ok unless you replace them manually.");
                     sb.AppendLine();
                     sb.AppendLine("The following characters are affected:");
                     sb.AppendLine();
@@ -191,20 +193,19 @@ namespace CPoolUtil.Interface
                 sb.AppendLine();
                 sb.AppendLine($"And {characters.Count - 10} more...");
             }
-            MessageBox.Show(sb.ToString(), "Duplicate Characters Ignored", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            if (Program.Settings.ShowWarnings)
+                MessageBox.Show(sb.ToString(), "Duplicate Characters Ignored", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void UpdateDlcAndModInfo(List<string> selectedOptions = null)
+        private void UpdateDlcAndModInfo(List<string> oldOptions = null)
         {
-            bool usedToHaveMoreColors = _overlord.DlcAndModOptions.Contains("More Hair Colors") || _overlord.DlcAndModOptions.Contains("More Armor Colors");
-            bool nowHasMoreColors = selectedOptions != null && (selectedOptions.Contains("More Hair Colors") || selectedOptions.Contains("More Armor Colors"));
-
-            if (selectedOptions != null)
-                _overlord.DlcAndModOptions = selectedOptions;
+            bool usedToHaveMoreColors = oldOptions != null && (oldOptions.Contains("More Hair Colors") || oldOptions.Contains("More Armor Colors"));
+            bool nowHasMoreColors = Overlord.DlcAndModOptions.Contains("More Hair Colors") || Overlord.DlcAndModOptions.Contains("More Armor Colors");
 
             // Reload the palettes if we detected a change
             if (usedToHaveMoreColors != nowHasMoreColors)
-                _overlord.LoadOrReloadPalettes();
+                Overlord.LoadOrReloadPalettes();
 
             UpdateSoldierSelectables();
         }
@@ -225,13 +226,13 @@ namespace CPoolUtil.Interface
             txtFirstName.Enabled = enable;
             txtNickName.Enabled = enable;
             txtLastName.Enabled = enable;
-            cboGender.Enabled = enable && cboGender.Items.Count > 1;
-            cboRace.Enabled = enable && cboRace.Items.Count > 1;
-            cboAttitude.Enabled = enable && cboAttitude.Items.Count > 1;
-            cboSoldierType.Enabled = enable && cboSoldierType.Items.Count > 1;
-            cboPreferredClass.Enabled = enable && cboPreferredClass.Items.Count > 1;
-            cboCountry.Enabled = enable && cboCountry.Items.Count > 1;
-            cboVoice.Enabled = enable && cboVoice.Items.Count > 1;
+            cboGender.Enabled = enable && ((IEnumerable<object>)cboGender.DataSource).Count() > 1;
+            cboRace.Enabled = enable && ((IEnumerable<object>)cboRace.DataSource).Count() > 1;
+            cboAttitude.Enabled = enable && ((IEnumerable<object>)cboAttitude.DataSource).Count() > 1;
+            cboSoldierType.Enabled = enable && ((IEnumerable<object>)cboSoldierType.DataSource).Count() > 1;
+            cboPreferredClass.Enabled = enable && ((IEnumerable<object>)cboPreferredClass.DataSource).Count() > 1;
+            cboCountry.Enabled = enable && ((IEnumerable<object>)cboCountry.DataSource).Count() > 1;
+            cboVoice.Enabled = enable && ((IEnumerable<object>)cboVoice.DataSource).Count() > 1;
             chkCanBeSoldier.Enabled = enable;
             chkCanBeVIP.Enabled = enable;
             chkCanBeDarkVIP.Enabled = enable;
@@ -249,25 +250,25 @@ namespace CPoolUtil.Interface
 
             foreach (var character in characters)
                 character.IsDirty = !reset;
-            _overlord.CharacterPool.IsDirty = !reset;
+            Overlord.CharacterPool.IsDirty = !reset;
             RefreshCharacterListDataSource();
             UpdateDirtyStatus();
         }
 
         private void UpdateDirtyStatus()
         {
-            lblFormStatus.Text = $"{_overlord.CharacterPool.PoolFileName?.Data ?? "(Unnamed Pool)"}{(_overlord.CharacterPool.IsDirty ? "*" : "")}";
-            Text = $"Character Pool Editor{(_overlord.CharacterPool.IsDirty ? "*" : "")}";
-            btnSavePool.Enabled = _overlord.CharacterPool.IsDirty;
+            lblFormStatus.Text = $"{Overlord.CharacterPool.PoolFileName?.Data ?? "(Unnamed Pool)"}{(Overlord.CharacterPool.IsDirty ? "*" : "")}";
+            Text = $"Character Pool Editor{(Overlord.CharacterPool.IsDirty ? "*" : "")}";
+            btnSavePool.Enabled = Overlord.CharacterPool.IsDirty;
         }
 
         #region Form and Control Events
 
         private void frmPoolEditor_Load(object sender, EventArgs e)
         {
-            _overlord.LoadCustomizationTemplates();
-            _overlord.LoadChoicesTemplates();
-            _overlord.LoadOrReloadPalettes();
+            Overlord.LoadCustomizationTemplates();
+            Overlord.LoadChoicesTemplates();
+            Overlord.LoadOrReloadPalettes();
 
             if (filesToLoadOnLaunch != null)
                 LoadPools(filesToLoadOnLaunch);
@@ -308,31 +309,32 @@ namespace CPoolUtil.Interface
 
         private void btnResetCharacter_Click(object sender, EventArgs e)
         {
-            _overlord.CharacterPool.ResetCharacters(_selectedCharacters);
+            Overlord.CharacterPool.ResetCharacters(_selectedCharacters);
             RefreshCharacterListDataSource();
         }
 
         private void btnDeleteSelected_Click(object sender, EventArgs e)
         {
-            _overlord.CharacterPool.RemoveCharacters(_selectedCharacters);
+            Overlord.CharacterPool.RemoveCharacters(_selectedCharacters);
             MarkCharactersModified(false, _selectedCharacters);
             RefreshCharacterListDataSource();
         }
 
         private void btnAddCharacter_Click(object sender, EventArgs e)
         {
-            _overlord.CharacterPool.AppendCharacters(Character.Create(_outputter, (++numCharactersAdded).ToString()));
+            Overlord.CharacterPool.AppendCharacters(Character.Create(_outputter, (++numCharactersAdded).ToString()));
             RefreshCharacterListDataSource();
         }
 
         private void btnDlcMods_Click(object sender, EventArgs e)
         {
+            var currentOptions = Overlord.DlcAndModOptions.ToList(); // Clone for checking later
             var forcedOptions = DetectDlcsAndMods();
-            var optionsForm = new frmPoolDlcModOptions(_overlord.DlcAndModOptions, forcedOptions);
+            var optionsForm = new frmPoolDlcModOptions(forcedOptions);
             optionsForm.ShowDialog();
 
             if (optionsForm.DialogResult == DialogResult.OK)
-                UpdateDlcAndModInfo(optionsForm.SelectedOptions);
+                UpdateDlcAndModInfo(currentOptions);
         }
 
         private void btnSavePool_Click(object sender, EventArgs e)
@@ -348,11 +350,11 @@ namespace CPoolUtil.Interface
             {
                 // Update PoolFileName first
                 var fileInfo = new FileInfo(sfd.FileName);
-                _overlord.CharacterPool.PoolFileName.Data = @$"CharacterPool\Importable\{fileInfo.Name}";
-                _overlord.CharacterPool.Save(sfd.FileName);
+                Overlord.CharacterPool.PoolFileName.Data = @$"CharacterPool\Importable\{fileInfo.Name}";
+                Overlord.CharacterPool.Save(sfd.FileName);
 
                 // Reset the pool - it has been saved!
-                MarkCharactersModified(true, _overlord.CharacterPool.Characters.ToArray());
+                MarkCharactersModified(true, Overlord.CharacterPool.Characters.ToArray());
 
                 MessageBox.Show("Pool saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -372,7 +374,7 @@ namespace CPoolUtil.Interface
 
         private void frmPoolEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (_overlord.CharacterPool.IsDirty
+            if (Overlord.CharacterPool.IsDirty
             && MessageBox.Show("You will lose your unsaved changes if you close this window. Are you sure you want to close it?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning) != DialogResult.Yes)
                 e.Cancel = true;
         }
@@ -383,11 +385,13 @@ namespace CPoolUtil.Interface
 
         private void RefreshCharacterListDataSource()
         {
-            var oldIndex = Math.Clamp(lstCharacters.SelectedIndex, -1, _overlord.CharacterPool.Characters.Count - 1);
+            _ignoreDataChanges = true;
+            var oldIndex = Math.Clamp(lstCharacters.SelectedIndex, -1, Overlord.CharacterPool.Characters.Count - 1);
             lstCharacters.SelectionMode = SelectionMode.One;
             lstCharacters.ValueMember = "ID";
             lstCharacters.DisplayMember = "FullName";
-            lstCharacters.DataSource = _overlord.CharacterPool.Characters.OrderBy(c => c.FullName).ToList();
+            lstCharacters.DataSource = Overlord.CharacterPool.Characters.OrderBy(c => c.FullName).ToList();
+            _ignoreDataChanges = false;
             if (oldIndex != -1 || lstCharacters.Items.Count == 0)
             {
                 // Force a selected refresh call here
@@ -398,7 +402,7 @@ namespace CPoolUtil.Interface
             }
             lstCharacters.SelectionMode = SelectionMode.MultiExtended;
 
-            lblNumCharacters.Text = $"Number of Characters: {_overlord.CharacterPool.NumCharacters}";
+            lblNumCharacters.Text = $"Number of Characters: {Overlord.CharacterPool.NumCharacters}";
         }
 
         private void ResetDropdowns()
@@ -486,7 +490,7 @@ namespace CPoolUtil.Interface
             var weaponPattern = sourceCbx == cboWeaponPattern ? cboWeaponPattern.SelectedValue as string : _selectedCharacter?.Appearance.WeaponPattern.Data;
 
             // Set every dropdown's datasource and value (from the character - if the old value no longer exists in the dropdown, it will default to the first selection), ensuring correct order for filters to work.
-            SetComboBoxDataSourceAndValue(cboSoldierType, _overlord.FilteredTemplates.Where(c => c.PartType == "Pawn" && c.CharacterTemplate.Contains("Soldier") && !string.IsNullOrWhiteSpace(c.Display)).GroupBy(g => g.CharacterTemplate).Select(g => g.First()), soldierType);
+            SetComboBoxDataSourceAndValue(cboSoldierType, Overlord.FilteredTemplates.Where(c => c.PartType == "Pawn" && c.CharacterTemplate.Contains("Soldier") && !string.IsNullOrWhiteSpace(c.Display)).GroupBy(g => g.CharacterTemplate).Select(g => g.First()), soldierType);
 
             // Miscellaneous helper variables
             bool isSoldier = soldierType == "Soldier";
@@ -503,31 +507,31 @@ namespace CPoolUtil.Interface
             chkCanBeDarkVIP.Checked &= !isSpark;
 
             // Tier 2 - Soldier type affects these options
-            SetComboBoxDataSourceAndValue(cboGender, Template.GetIndexes(_overlord.Choices.Where(c => c.PartType == "Gender").ToList()).Skip(isSpark ? 0 : 1).Take(isSpark ? 1 : 2), gender);
-            SetComboBoxDataSourceAndValue(cboRace, Template.GetIndexes(isSpark ? new List<Template> { _overlord.Choices.First(c => c.Name == "eRace_None") } : _overlord.Choices.Where(c => c.PartType == "Race" && c.Name != "eRace_None").ToList()), race);
-            SetComboBoxDataSourceAndValue(cboAttitude, Template.GetIndexes(isSpark || isTemplar ? new List<Template> { _overlord.Choices.First(c => c.Name == "Personality_None") } : _overlord.Choices.Where(c => c.PartType == "Attitude" && c.Name != "Personality_None").ToList()), attitude);
-            SetComboBoxDataSourceAndValue(cboPreferredClass, _overlord.Choices.Where(c => c.PartType == "Class" && c.CharacterTemplate == soldierType), preferredClass);
-            SetComboBoxDataSourceAndValue(cboCountry, _overlord.Choices.Where(c => c.PartType == "Country" && c.CharacterTemplate == soldierType), country);
+            SetComboBoxDataSourceAndValue(cboGender, Template.GetIndexes(Overlord.Choices.Where(c => c.PartType == "Gender").ToList()).Skip(isSpark ? 0 : 1).Take(isSpark ? 1 : 2), gender);
+            SetComboBoxDataSourceAndValue(cboRace, Template.GetIndexes(isSpark ? new List<Template> { Overlord.Choices.First(c => c.Name == "eRace_None") } : Overlord.Choices.Where(c => c.PartType == "Race" && c.Name != "eRace_None").ToList()), race);
+            SetComboBoxDataSourceAndValue(cboAttitude, Template.GetIndexes(isSpark || isTemplar ? new List<Template> { Overlord.Choices.First(c => c.Name == "Personality_None") } : Overlord.Choices.Where(c => c.PartType == "Attitude" && c.Name != "Personality_None").ToList()), attitude);
+            SetComboBoxDataSourceAndValue(cboPreferredClass, Overlord.Choices.Where(c => c.PartType == "Class" && c.CharacterTemplate == soldierType), preferredClass);
+            SetComboBoxDataSourceAndValue(cboCountry, Overlord.Choices.Where(c => c.PartType == "Country" && c.CharacterTemplate == soldierType), country);
 
             // Helpers that may have not been set until now
-            var genderStr = _overlord.Choices.Where(c => c.PartType == "Gender").ElementAt((int)(cboGender.SelectedValue ?? 0)).Name;
-            var raceStr = _overlord.Choices.Where(c => c.PartType == "Race").ElementAt((int)(cboRace.SelectedValue ?? 0) + 1).Name; // Skip "None"
-            var torsoUnderlay = isSpark ? torso : _overlord.FilteredTemplates.First(t => t.PartType == "Torso" && t.ArmorTemplate == "Underlay" && t.IsGender(genderStr)).Name;
-            var armsUnderlay = isSpark ? arms : _overlord.FilteredTemplates.First(t => t.PartType == "Arms" && t.ArmorTemplate == "Underlay" && t.IsGender(genderStr)).Name;
-            var legsUnderlay = isSpark ? legs : _overlord.FilteredTemplates.First(t => t.PartType == "Legs" && t.ArmorTemplate == "Underlay" && t.IsGender(genderStr)).Name;
+            var genderStr = Overlord.Choices.Where(c => c.PartType == "Gender").ElementAt((int)(cboGender.SelectedValue ?? 0)).Name;
+            var raceStr = Overlord.Choices.Where(c => c.PartType == "Race").ElementAt((int)(cboRace.SelectedValue ?? 0) + 1).Name; // Skip "None"
+            var torsoUnderlay = isSpark ? torso : Overlord.FilteredTemplates.First(t => t.PartType == "Torso" && t.ArmorTemplate == "Underlay" && t.IsGender(genderStr)).Name;
+            var armsUnderlay = isSpark ? arms : Overlord.FilteredTemplates.First(t => t.PartType == "Arms" && t.ArmorTemplate == "Underlay" && t.IsGender(genderStr)).Name;
+            var legsUnderlay = isSpark ? legs : Overlord.FilteredTemplates.First(t => t.PartType == "Legs" && t.ArmorTemplate == "Underlay" && t.IsGender(genderStr)).Name;
 
             // Some of these next properties are tier 3 - multiple sources above can affect them
-            SetComboBoxDataSourceAndValue(cboVoice, _overlord.FilteredTemplates.Where(t => t.PartType == "Voice" && !string.IsNullOrEmpty(t.Display) && t.IsGender(genderStr) && (soldierType == "Soldier" || t.CharacterTemplate == soldierType)).GroupBy(g => g.Name).Select(g => g.First()), voice);
-            SetComboBoxDataSourceAndValue(cboSkinColor, _overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.SkinColor && p.PaletteSubType == race), skinColor, !isSpark);
-            SetComboBoxDataSourceAndValue(cboEyeColor, _overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.EyeColor), eyeColor, !isSpark);
-            SetComboBoxDataSourceAndValue(cboFace, _overlord.FilteredTemplates.Where(t => t.PartType == "Head" && string.IsNullOrEmpty(t.Tech) && !string.IsNullOrEmpty(t.Display) && t.IsGender(genderStr)
+            SetComboBoxDataSourceAndValue(cboVoice, Overlord.FilteredTemplates.Where(t => t.PartType == "Voice" && !string.IsNullOrEmpty(t.Display) && t.IsGender(genderStr) && (soldierType == "Soldier" || t.CharacterTemplate == soldierType)).GroupBy(g => g.Name).Select(g => g.First()), voice);
+            SetComboBoxDataSourceAndValue(cboSkinColor, Overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.SkinColor && p.PaletteSubType == race), skinColor, !isSpark);
+            SetComboBoxDataSourceAndValue(cboEyeColor, Overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.EyeColor), eyeColor, !isSpark);
+            SetComboBoxDataSourceAndValue(cboFace, Overlord.FilteredTemplates.Where(t => t.PartType == "Head" && string.IsNullOrEmpty(t.Tech) && !string.IsNullOrEmpty(t.Display) && t.IsGender(genderStr)
                 && (isSpark || t.IsRace(raceStr)) && (string.IsNullOrEmpty(t.CharacterTemplate) == (!isSpark && !isSkirmisher) || t.CharacterTemplate == soldierType)).GroupBy(g => g.Name).Select(g => g.First()), face);
-            SetComboBoxDataSourceAndValue(cboHelmet, _overlord.FilteredTemplates.Where(t => t.PartType == "Helmets" && string.IsNullOrEmpty(t.CharacterTemplate) && !string.IsNullOrEmpty(t.Display) && t.IsGender(genderStr)).GroupBy(g => g.Name).Select(g => g.First()), helmet, !isSpark);
-            SetComboBoxDataSourceAndValue(cboTorso, Template.GetIndexes(_overlord.FilteredTemplates.Where(t => t.PartType == "Torso" && t.CharacterTemplate == soldierType && t.ArmorTemplate == armorTemplate && t.IsGender(genderStr)).GroupBy(g => g.Name).Select(g => g.First()).ToList()), torso);
-            SetComboBoxDataSourceAndValue(cboTorsoGear, _overlord.FilteredTemplates.Where(t => t.PartType == "TorsoDeco" && t.CharacterTemplate == soldierType && t.IsGender(genderStr)), torsoGear == "None" ? null : torsoGear); // Force a selection if possible
+            SetComboBoxDataSourceAndValue(cboHelmet, Overlord.FilteredTemplates.Where(t => t.PartType == "Helmets" && string.IsNullOrEmpty(t.CharacterTemplate) && !string.IsNullOrEmpty(t.Display) && t.IsGender(genderStr)).GroupBy(g => g.Name).Select(g => g.First()), helmet, !isSpark);
+            SetComboBoxDataSourceAndValue(cboTorso, Template.GetIndexes(Overlord.FilteredTemplates.Where(t => t.PartType == "Torso" && t.CharacterTemplate == soldierType && t.ArmorTemplate == armorTemplate && t.IsGender(genderStr)).GroupBy(g => g.Name).Select(g => g.First()).ToList()), torso);
+            SetComboBoxDataSourceAndValue(cboTorsoGear, Overlord.FilteredTemplates.Where(t => t.PartType == "TorsoDeco" && t.CharacterTemplate == soldierType && t.IsGender(genderStr)), torsoGear == "None" ? null : torsoGear); // Force a selection if possible
 
             // More helpers that may have not been set until now
-            var helmetInfo = _overlord.HelmetInfos.FirstOrDefault(h => h.Name == cboHelmet.SelectedValue as string);
+            var helmetInfo = Overlord.HelmetInfos.FirstOrDefault(h => h.Name == cboHelmet.SelectedValue as string);
             bool hideHair = helmetInfo?.HideHair ?? false;
             bool hideUpperFaceProps = helmetInfo?.HideUpperFaceProps ?? false;
             bool hideLowerFaceProps = helmetInfo?.HideLowerFaceProps ?? false;
@@ -536,37 +540,37 @@ namespace CPoolUtil.Interface
             bool hideArms = (cboTorso.SelectedItem as Template)?.Origin == "Anarchy's Children";
 
             // And on to tier 4 & misc properties. Tiers 2 and 3 can sometimes affect these
-            SetComboBoxDataSourceAndValue(cboHair, _overlord.FilteredTemplates.Where(t => t.PartType == "Hair" && !string.IsNullOrEmpty(t.Display) && t.IsGender(genderStr)).GroupBy(g => g.Name).Select(g => g.First()), hair, !isSpark && !isSkirmisher && !hideHair);
-            SetComboBoxDataSourceAndValue(cboHairColor, _overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.HairColor), hairColor, cboHair.Enabled);
-            SetComboBoxDataSourceAndValue(cboFacialHair, _overlord.FilteredTemplates.Where(t => t.PartType == "Beards" && !t.SpecializedType).GroupBy(g => g.Name).Select(g => g.First()), facialHair, gender == 1 && !isSpark && !isSkirmisher && !hideFacialHair);
-            SetComboBoxDataSourceAndValue(cboUpperFaceProps, _overlord.FilteredTemplates.Where(t => t.PartType == "FacePropsUpper" && !t.SpecializedType && t.IsGender(genderStr, true)).GroupBy(g => g.Name).Select(g => g.First()), upperFaceProps, !isSpark && !isSkirmisher && !hideUpperFaceProps);
-            SetComboBoxDataSourceAndValue(cboLowerFaceProps, _overlord.FilteredTemplates.Where(t => t.PartType == "FacePropsLower" && !t.SpecializedType && t.IsGender(genderStr, true)).GroupBy(g => g.Name).Select(g => g.First()), lowerFaceProps, !isSpark && !hideLowerFaceProps);
-            SetComboBoxDataSourceAndValue(cboFacePaint, _overlord.FilteredTemplates.Where(t => t.PartType == "Facepaint").GroupBy(g => g.Name).Select(g => g.First()), facePaint, !isSpark);
-            SetComboBoxDataSourceAndValue(cboScars, _overlord.FilteredTemplates.Where(t => (string.IsNullOrEmpty(t.CharacterTemplate) == !isSkirmisher || t.CharacterTemplate == soldierType) && t.PartType == "Scars").GroupBy(g => g.Name).Select(g => g.First()), scars, !isSpark);
-            SetComboBoxDataSourceAndValue(cboArmorColor, _overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.ArmorColor), armorColor);
-            SetComboBoxDataSourceAndValue(cboSecondArmorColor, _overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.ArmorColor), secondArmorColor);
-            SetComboBoxDataSourceAndValue(cboArmorPattern, _overlord.FilteredTemplates.Where(t => t.PartType == "Patterns").GroupBy(g => g.Name).Select(g => g.First()), armorPattern);
-            SetComboBoxDataSourceAndValue(cboArms, Template.GetIndexes(_overlord.FilteredTemplates.Where(t => !hideArms && t.PartType == "Arms" && t.IsGender(genderStr) && t.ArmorTemplate == armorTemplate).GroupBy(g => g.Name).Select(g => g.First()).ToList()), hasAnyArmGear ? "None" : arms);
+            SetComboBoxDataSourceAndValue(cboHair, Overlord.FilteredTemplates.Where(t => t.PartType == "Hair" && !string.IsNullOrEmpty(t.Display) && t.IsGender(genderStr)).GroupBy(g => g.Name).Select(g => g.First()), hair, !isSpark && !isSkirmisher && !hideHair);
+            SetComboBoxDataSourceAndValue(cboHairColor, Overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.HairColor), hairColor, cboHair.Enabled);
+            SetComboBoxDataSourceAndValue(cboFacialHair, Overlord.FilteredTemplates.Where(t => t.PartType == "Beards" && !t.SpecializedType).GroupBy(g => g.Name).Select(g => g.First()), facialHair, gender == 1 && !isSpark && !isSkirmisher && !hideFacialHair);
+            SetComboBoxDataSourceAndValue(cboUpperFaceProps, Overlord.FilteredTemplates.Where(t => t.PartType == "FacePropsUpper" && !t.SpecializedType && t.IsGender(genderStr, true)).GroupBy(g => g.Name).Select(g => g.First()), upperFaceProps, !isSpark && !isSkirmisher && !hideUpperFaceProps);
+            SetComboBoxDataSourceAndValue(cboLowerFaceProps, Overlord.FilteredTemplates.Where(t => t.PartType == "FacePropsLower" && !t.SpecializedType && t.IsGender(genderStr, true)).GroupBy(g => g.Name).Select(g => g.First()), lowerFaceProps, !isSpark && !hideLowerFaceProps);
+            SetComboBoxDataSourceAndValue(cboFacePaint, Overlord.FilteredTemplates.Where(t => t.PartType == "Facepaint").GroupBy(g => g.Name).Select(g => g.First()), facePaint, !isSpark);
+            SetComboBoxDataSourceAndValue(cboScars, Overlord.FilteredTemplates.Where(t => (string.IsNullOrEmpty(t.CharacterTemplate) == !isSkirmisher || t.CharacterTemplate == soldierType) && t.PartType == "Scars").GroupBy(g => g.Name).Select(g => g.First()), scars, !isSpark);
+            SetComboBoxDataSourceAndValue(cboArmorColor, Overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.ArmorColor), armorColor);
+            SetComboBoxDataSourceAndValue(cboSecondArmorColor, Overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.ArmorColor), secondArmorColor);
+            SetComboBoxDataSourceAndValue(cboArmorPattern, Overlord.FilteredTemplates.Where(t => t.PartType == "Patterns").GroupBy(g => g.Name).Select(g => g.First()), armorPattern);
+            SetComboBoxDataSourceAndValue(cboArms, Template.GetIndexes(Overlord.FilteredTemplates.Where(t => !hideArms && t.PartType == "Arms" && t.IsGender(genderStr) && t.ArmorTemplate == armorTemplate).GroupBy(g => g.Name).Select(g => g.First()).ToList()), hasAnyArmGear ? "None" : arms);
 
             // And MORE helpers that may not have been set until now
             bool forceArmGearActive = hasAnyArmGear || !cboArms.Enabled;
-            var armInfos = new[] { _overlord.ArmInfos.FirstOrDefault(a => a.Name == cboLeftArm.SelectedValue as string), _overlord.ArmInfos.FirstOrDefault(a => a.Name == cboRightArm.SelectedValue as string) };
+            var armInfos = new[] { Overlord.ArmInfos.FirstOrDefault(a => a.Name == cboLeftArm.SelectedValue as string), Overlord.ArmInfos.FirstOrDefault(a => a.Name == cboRightArm.SelectedValue as string) };
             bool[] hideForearms = new[] { armInfos[0]?.HideForearms ?? false, armInfos[1]?.HideForearms ?? false };
 
             // Tier 5. Arms are weird, and I'm too lazy to explain it
-            SetComboBoxDataSourceAndValue(cboLeftArm, _overlord.FilteredTemplates.Where(t => t.PartType == "LeftArm" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && leftArm == "None" ? null : leftArm);
-            SetComboBoxDataSourceAndValue(cboRightArm, _overlord.FilteredTemplates.Where(t => t.PartType == "RightArm" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && rightArm == "None" ? null : rightArm);
-            SetComboBoxDataSourceAndValue(cboLeftForearm, _overlord.FilteredTemplates.Where(t => t.PartType == "LeftForearm" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && leftForearm == "None" ? null : leftForearm, !hideForearms[0]);
-            SetComboBoxDataSourceAndValue(cboRightForearm, _overlord.FilteredTemplates.Where(t => t.PartType == "RightForearm" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && rightForearm == "None" ? null : rightForearm, !hideForearms[1]);
-            SetComboBoxDataSourceAndValue(cboLeftShoulder, _overlord.FilteredTemplates.Where(t => t.PartType == "LeftArmDeco" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && leftShoulder == "None" ? null : leftShoulder, forceArmGearActive);
-            SetComboBoxDataSourceAndValue(cboRightShoulder, _overlord.FilteredTemplates.Where(t => t.PartType == "RightArmDeco" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && rightShoulder == "None" ? null : rightShoulder, forceArmGearActive);
-            SetComboBoxDataSourceAndValue(cboLeftArmTattoo, _overlord.FilteredTemplates.Where(t => t.PartType == "Tattoos").GroupBy(g => g.Name).Select(t => t.First()), leftArmTattoo, !isSpark);
-            SetComboBoxDataSourceAndValue(cboRightArmTattoo, _overlord.FilteredTemplates.Where(t => t.PartType == "Tattoos").GroupBy(g => g.Name).Select(t => t.First()), rightArmTattoo, !isSpark);
-            SetComboBoxDataSourceAndValue(cboLegs, Template.GetIndexes(_overlord.FilteredTemplates.Where(t => t.PartType == "Legs" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == armorTemplate || (!isSpark && !isSoldier))).GroupBy(g => g.Name).Select(t => t.First()).ToList()), legs);
-            SetComboBoxDataSourceAndValue(cboThighs, _overlord.FilteredTemplates.Where(t => t.PartType == "Thighs" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), thighs == "None" ? null : thighs); // These manual "None" checks are getting kind of sloppy...
-            SetComboBoxDataSourceAndValue(cboTattooColor, _overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.ArmorColor), tattooColor);
-            SetComboBoxDataSourceAndValue(cboWeaponColor, _overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.ArmorColor), weaponColor);
-            SetComboBoxDataSourceAndValue(cboWeaponPattern, _overlord.FilteredTemplates.Where(t => t.PartType == "Patterns").GroupBy(g => g.Name).Select(g => g.First()), weaponPattern);
+            SetComboBoxDataSourceAndValue(cboLeftArm, Overlord.FilteredTemplates.Where(t => t.PartType == "LeftArm" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && leftArm == "None" ? null : leftArm);
+            SetComboBoxDataSourceAndValue(cboRightArm, Overlord.FilteredTemplates.Where(t => t.PartType == "RightArm" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && rightArm == "None" ? null : rightArm);
+            SetComboBoxDataSourceAndValue(cboLeftForearm, Overlord.FilteredTemplates.Where(t => t.PartType == "LeftForearm" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && leftForearm == "None" ? null : leftForearm, !hideForearms[0]);
+            SetComboBoxDataSourceAndValue(cboRightForearm, Overlord.FilteredTemplates.Where(t => t.PartType == "RightForearm" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && rightForearm == "None" ? null : rightForearm, !hideForearms[1]);
+            SetComboBoxDataSourceAndValue(cboLeftShoulder, Overlord.FilteredTemplates.Where(t => t.PartType == "LeftArmDeco" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && leftShoulder == "None" ? null : leftShoulder, forceArmGearActive);
+            SetComboBoxDataSourceAndValue(cboRightShoulder, Overlord.FilteredTemplates.Where(t => t.PartType == "RightArmDeco" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), forceArmGearActive && rightShoulder == "None" ? null : rightShoulder, forceArmGearActive);
+            SetComboBoxDataSourceAndValue(cboLeftArmTattoo, Overlord.FilteredTemplates.Where(t => t.PartType == "Tattoos").GroupBy(g => g.Name).Select(t => t.First()), leftArmTattoo, !isSpark);
+            SetComboBoxDataSourceAndValue(cboRightArmTattoo, Overlord.FilteredTemplates.Where(t => t.PartType == "Tattoos").GroupBy(g => g.Name).Select(t => t.First()), rightArmTattoo, !isSpark);
+            SetComboBoxDataSourceAndValue(cboLegs, Template.GetIndexes(Overlord.FilteredTemplates.Where(t => t.PartType == "Legs" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == armorTemplate || (!isSpark && !isSoldier))).GroupBy(g => g.Name).Select(t => t.First()).ToList()), legs);
+            SetComboBoxDataSourceAndValue(cboThighs, Overlord.FilteredTemplates.Where(t => t.PartType == "Thighs" && t.IsGender(genderStr) && t.CharacterTemplate == soldierType && (t.ArmorTemplate == null || t.ArmorTemplate == armorTemplate)), thighs == "None" ? null : thighs); // These manual "None" checks are getting kind of sloppy...
+            SetComboBoxDataSourceAndValue(cboTattooColor, Overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.ArmorColor), tattooColor);
+            SetComboBoxDataSourceAndValue(cboWeaponColor, Overlord.Palettes.Where(p => p.PaletteType == Palette.ePaletteType.ArmorColor), weaponColor);
+            SetComboBoxDataSourceAndValue(cboWeaponPattern, Overlord.FilteredTemplates.Where(t => t.PartType == "Patterns").GroupBy(g => g.Name).Select(g => g.First()), weaponPattern);
 
             // If any of the following edits are successful (using non-short-circuiting operators), mark the character as modified and refresh the list
             if (_selectedCharacter != null &&
@@ -624,27 +628,41 @@ namespace CPoolUtil.Interface
 
         private void SetComboBoxDataSourceAndValue<TS, TV>(ComboBox cbx, IEnumerable<TS> ds, TV targetValue, bool enabled = true)
         {
-            // TODO: Support unknown values. Currently, if we load something that has an unknown value (I.E. Boba Fett's helmet), it overwrites it with the first selection
-
-            // Automatically add "None" if we need it (if the type is correct, our value member is "Name", we don't already have a "None" in the list, and either target value is "None" or we have no items
+            // TODO: Should we dynamically add unknown values to our global templates list? If so, we should probably highlight them red or something to show they are not supported, with a tooltip on hover?
             var newDs = ds.ToList();
-            if (newDs is List<Template> templateList && cbx.ValueMember == "Name" && !templateList.Any(t => t.Name == "None") && (targetValue as string == "None" || !templateList.Any()))
-                (newDs as List<Template>).Insert(0, _overlord.Templates.First(t => t.Name == "None"));
+            if (newDs is List<Template> templateList)
+            {
+                // Automatically add "None" if we need it (if the type is correct, our value member is "Name", we don't already have a "None" in the list, and either (target value is "None" or we have no items))
+                if (cbx.ValueMember == "Name" && !templateList.Any(t => t.Name == "None") && (targetValue as string == "None" || !templateList.Any()))
+                    (newDs as List<Template>).Insert(0, Overlord.Templates.First(t => t.Name == "None"));
+
+                // Get the values of each of the target template property using reflection. If our target value isn't in that list, create it
+                if (targetValue != null)
+                {
+                    var values = newDs.Select(t => t.GetType().GetProperty(cbx.ValueMember).GetValue(t) as string).ToList();
+                    if (!values.Contains(targetValue as string))
+                    {
+                        string parseLine = cbx.ValueMember == "Name" ? $"TemplateName={targetValue}" : $"TemplateName=TEMP_UNKNOWN,{cbx.ValueMember}={targetValue}";
+                        var tempTemplate = Template.Parse(parseLine, new Dictionary<string, string>(), null);
+                        (newDs as List<Template>).Insert(0, tempTemplate);
+                    }
+                }
+            }
 
             // Only set datasource if it's different
             var existingDs = cbx.DataSource as IList<TS>;
             if (existingDs == null || !newDs.SequenceEqual(existingDs))
                 cbx.DataSource = newDs;
-            
-            cbx.Enabled = enabled && _selectedCharacter != null && cbx.Items.Count > 1;
 
             // Only set the selected value if it's not null and not already equal to the existing value
             if (targetValue != null && !targetValue.Equals(cbx.SelectedValue))
                 cbx.SelectedValue = targetValue;
 
+            cbx.Enabled = enabled && _selectedCharacter != null && cbx.Items.Count > 1;
+
             // If we still don't have a value at this point, select the top item
-            if (cbx.SelectedValue == null && cbx.Items.Count > 0)
-                cbx.SelectedItem = cbx.Items[0];
+            if (cbx.SelectedValue == null && newDs.Count > 0)
+                cbx.SelectedIndex = 0;
         }
 
         private bool EditSoldier<T>(T oldVal, T newVal, Action<T> setData)

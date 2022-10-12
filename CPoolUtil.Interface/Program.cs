@@ -7,8 +7,10 @@ using System.Windows.Forms;
 
 namespace CPoolUtil.Interface
 {
-    static class Program
+    public static class Program
     {
+        public static Settings Settings { get; set; } = new Settings();
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -18,6 +20,7 @@ namespace CPoolUtil.Interface
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Settings.Load();
             Application.Run(new frmMenu());
         }
 
@@ -29,8 +32,7 @@ namespace CPoolUtil.Interface
         /// <param name="outputFilePath">The consolidated output text file location</param>
         static void ParseHelmetInfo(string rawHelmetFilesRootDir, string outputFilePath)
         {
-            var overlord = new Overlord();
-            overlord.LoadCustomizationTemplates();
+            Overlord.LoadCustomizationTemplates();
             var files = new DirectoryInfo(rawHelmetFilesRootDir).GetFiles("*", SearchOption.AllDirectories);
 
             var sb = new StringBuilder();
@@ -45,7 +47,7 @@ namespace CPoolUtil.Interface
                 bool hideLower = lines.Any(l => l[0] == "bHideLowerFacialProps");
                 bool hideFacialHair = lines.Any(l => l[0] == "bHideFacialHair");
 
-                var matchingTemplate = overlord.Templates.First(t => t.ArchetypeName?.Equals(arcName, StringComparison.OrdinalIgnoreCase) ?? false);
+                var matchingTemplate = Overlord.Templates.First(t => t.ArchetypeName?.Equals(arcName, StringComparison.OrdinalIgnoreCase) ?? false);
 
                 sb.AppendLine($"{matchingTemplate.Name}={(hideHair ? "" : "!")}HideHair,{(hideUpper ? "" : "!")}HideUpperFaceProps,{(hideLower ? "" : "!")}HideLowerFaceProps,{(hideFacialHair ? "" : "!")}HideFacialHair");
             }

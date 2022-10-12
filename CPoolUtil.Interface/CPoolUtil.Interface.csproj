@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <RootNamespace>CPoolUtil.Interface</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>XCOM 2 Character Pool Utility</AssemblyName>
     <StartupObject>CPoolUtil.Interface.Program</StartupObject>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Shaosil</Authors>
     <Product>CPoolUtil</Product>
     <PackageId>XCOM 2 Character Pool Utility</PackageId>
@@ -34,6 +34,9 @@
 
   <ItemGroup>
     <Compile Update="frmDuplicateSoldiers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="frmSettings.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">

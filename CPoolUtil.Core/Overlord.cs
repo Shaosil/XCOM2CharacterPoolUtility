@@ -6,24 +6,32 @@ using System.Linq;
 
 namespace CPoolUtil.Core
 {
-    public class Overlord
+    public static class Overlord
     {
-        private List<Template> _templates = new List<Template>();
-        private List<Template> _choices = new List<Template>();
-        private List<Palette> _palettes = new List<Palette>();
-        private List<HelmetInfo> _helmetInfos = new List<HelmetInfo>();
-        private List<ArmInfo> _armInfos = new List<ArmInfo>();
+        private static List<Template> _templates = new List<Template>();
+        private static Dictionary<string, string> _localizedTemplates = new Dictionary<string, string>(); // <Template.Name, Template.Display> - If display is null, it will fallback to english (if it exists)
+        private static List<Template> _choices = new List<Template>();
+        private static List<Palette> _palettes = new List<Palette>();
+        private static List<HelmetInfo> _helmetInfos = new List<HelmetInfo>();
+        private static List<ArmInfo> _armInfos = new List<ArmInfo>();
 
-        public CPool CharacterPool { get; private set; }
-        public IReadOnlyList<Template> Choices => _choices;
-        public IReadOnlyList<Palette> Palettes => _palettes;
-        public IReadOnlyList<Template> Templates => _templates;
-        public IEnumerable<Template> FilteredTemplates => _templates.Where(t => t.Origin == "Vanilla" || DlcAndModOptions.Contains(t.Origin));
-        public IReadOnlyList<HelmetInfo> HelmetInfos => _helmetInfos;
-        public IReadOnlyList<ArmInfo> ArmInfos => _armInfos;
-        public List<string> DlcAndModOptions { get; set; } = new List<string>();
+        public static CPool CharacterPool { get; private set; }
+        public static IReadOnlyList<Template> Choices => _choices;
+        public static IReadOnlyList<Palette> Palettes => _palettes;
+        public static IReadOnlyList<Template> Templates => _templates;
+        public static IReadOnlyDictionary<string, string> LocalizedTemplates => _localizedTemplates;
+        public static IEnumerable<Template> FilteredTemplates => _templates.Where(t => t.Origin == "Vanilla" || DlcAndModOptions.Contains(t.Origin));
 
-        public void AppendPool(CPool newPool)
+        public static IReadOnlyList<HelmetInfo> HelmetInfos => _helmetInfos;
+        public static IReadOnlyList<ArmInfo> ArmInfos => _armInfos;
+        public static List<string> DlcAndModOptions { get; set; } = new List<string>();
+
+        public static void ClearPools()
+        {
+            CharacterPool = null;
+        }
+
+        public static void AppendPool(CPool newPool)
         {
             if (CharacterPool == null)
                 CharacterPool = newPool;
@@ -31,16 +39,16 @@ namespace CPoolUtil.Core
                 CharacterPool.AppendCharacters(newPool.Characters.ToArray());
         }
 
-        public void LoadChoicesTemplates()
+        public static void LoadChoicesTemplates()
         {
             if (_choices.Count > 0) return;
 
             var choicesTemplate = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Files/Templates/Persistent Choices.txt"));
-            var choicesLoc = GetLocalizationFile(choicesTemplate.Name);
+            var choicesLoc = GetLocalizationsByCultureInfo(CultureInfo.CurrentCulture, choicesTemplate.Name);
             foreach (var line in File.ReadAllLines(choicesTemplate.FullName)) _choices.Add(Template.Parse(line, choicesLoc, "Vanilla"));
         }
 
-        public void LoadOrReloadPalettes()
+        public static void LoadOrReloadPalettes()
         {
             // Only read unchanging palettes once
             if (_palettes.Count == 0)
@@ -71,7 +79,7 @@ namespace CPoolUtil.Core
             for (int i = 0; i < armorColors.Length; i++) _palettes.Add(Palette.Parse(armorColors[i], i, Palette.ePaletteType.ArmorColor));
         }
 
-        public void LoadCustomizationTemplates()
+        public static void LoadCustomizationTemplates()
         {
             if (_templates.Count > 0) return;
 
@@ -88,55 +96,78 @@ namespace CPoolUtil.Core
             var maleHairTemplates = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Files/Templates/Male Hair Pack.txt"));
 
             // Localization files
-            var vanillaLoc = GetLocalizationFile(vanillaTemplates.Name);
-            var wotcLoc = GetLocalizationFile(wotcTemplates.Name);
-            var tleLoc = GetLocalizationFile(tleTemplates.Name);
-            var anarchyLoc = GetLocalizationFile(anarchyTemplates.Name);
-            var alientHuntersLoc = GetLocalizationFile(alienHuntersTemplates.Name);
-            var shensLoc = GetLocalizationFile(shensTemplates.Name);
-            var resistanceLoc = GetLocalizationFile(resistanceTemplates.Name);
-            var capnBubsLoc = GetLocalizationFile(capnBubsTemplates.Name);
-            var femaleHairLoc = GetLocalizationFile(femaleHairTemplates.Name);
-            var maleHairLoc = GetLocalizationFile(maleHairTemplates.Name);
+            var templateFiles = new[]
+            {
+                vanillaTemplates.Name,
+                wotcTemplates.Name,
+                tleTemplates.Name,
+                anarchyTemplates.Name,
+                alienHuntersTemplates.Name,
+                shensTemplates.Name,
+                resistanceTemplates.Name,
+                capnBubsTemplates.Name,
+                femaleHairTemplates.Name,
+                maleHairTemplates.Name,
+            };
+            _localizedTemplates = GetLocalizationsByCultureInfo(CultureInfo.CurrentCulture, templateFiles);
+
+            if (CultureInfo.CurrentCulture.Name != "en")
+            {
+                // Add english localization to any items that are missing from the previously localized files
+                var englishTemplates = GetLocalizationsByCultureInfo(CultureInfo.GetCultureInfo("en"), templateFiles);
+                foreach (var englishItem in englishTemplates)
+                    if (!_localizedTemplates.ContainsKey(englishItem.Key) || string.IsNullOrWhiteSpace(_localizedTemplates[englishItem.Key]))
+                        _localizedTemplates[englishItem.Key] = englishItem.Value;
+            }
+
 
             // Template list parsing. Begin with a "None" template
-            _templates.Add(Template.CreateNone(vanillaLoc["Pat_Nothing"]));
-            foreach (var line in File.ReadAllLines(vanillaTemplates.FullName)) _templates.Add(Template.Parse(line, vanillaLoc, "Vanilla"));
-            foreach (var line in File.ReadAllLines(wotcTemplates.FullName)) _templates.Add(Template.Parse(line, wotcLoc, "WotC"));
-            foreach (var line in File.ReadAllLines(tleTemplates.FullName)) _templates.Add(Template.Parse(line, tleLoc, "Tactical Legacy Pack"));
-            foreach (var line in File.ReadAllLines(anarchyTemplates.FullName)) _templates.Add(Template.Parse(line, anarchyLoc, "Anarchy's Children"));
-            foreach (var line in File.ReadAllLines(alienHuntersTemplates.FullName)) _templates.Add(Template.Parse(line, alientHuntersLoc, "Alien Hunters"));
-            foreach (var line in File.ReadAllLines(shensTemplates.FullName)) _templates.Add(Template.Parse(line, shensLoc, "Shen's Last Gift"));
-            foreach (var line in File.ReadAllLines(resistanceTemplates.FullName)) _templates.Add(Template.Parse(line, resistanceLoc, "Resistance Warrior Pack"));
-            foreach (var line in File.ReadAllLines(capnBubsTemplates.FullName)) _templates.Add(Template.Parse(line, capnBubsLoc, "CapnBubs Accessories"));
-            foreach (var line in File.ReadAllLines(femaleHairTemplates.FullName)) _templates.Add(Template.Parse(line, femaleHairLoc, "Female Hair Pack"));
-            foreach (var line in File.ReadAllLines(maleHairTemplates.FullName)) _templates.Add(Template.Parse(line, maleHairLoc, "Male Hair Pack"));
+            _templates.Add(Template.CreateNone(_localizedTemplates["Pat_Nothing"]));
+            foreach (var line in File.ReadAllLines(vanillaTemplates.FullName)) _templates.Add(Template.Parse(line, _localizedTemplates, "Vanilla"));
+            foreach (var line in File.ReadAllLines(wotcTemplates.FullName)) _templates.Add(Template.Parse(line, _localizedTemplates, "WotC"));
+            foreach (var line in File.ReadAllLines(tleTemplates.FullName)) _templates.Add(Template.Parse(line, _localizedTemplates, "Tactical Legacy Pack"));
+            foreach (var line in File.ReadAllLines(anarchyTemplates.FullName)) _templates.Add(Template.Parse(line, _localizedTemplates, "Anarchy's Children"));
+            foreach (var line in File.ReadAllLines(alienHuntersTemplates.FullName)) _templates.Add(Template.Parse(line, _localizedTemplates, "Alien Hunters"));
+            foreach (var line in File.ReadAllLines(shensTemplates.FullName)) _templates.Add(Template.Parse(line, _localizedTemplates, "Shen's Last Gift"));
+            foreach (var line in File.ReadAllLines(resistanceTemplates.FullName)) _templates.Add(Template.Parse(line, _localizedTemplates, "Resistance Warrior Pack"));
+            foreach (var line in File.ReadAllLines(capnBubsTemplates.FullName)) _templates.Add(Template.Parse(line, _localizedTemplates, "CapnBubs Accessories"));
+            foreach (var line in File.ReadAllLines(femaleHairTemplates.FullName)) _templates.Add(Template.Parse(line, _localizedTemplates, "Female Hair Pack"));
+            foreach (var line in File.ReadAllLines(maleHairTemplates.FullName)) _templates.Add(Template.Parse(line, _localizedTemplates, "Male Hair Pack"));
 
-            // Always load helmet/arm information if this function was called
+            // Also load helmet/arm information
             var helmetInfoLines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Files/Helmet Info.txt"));
             var armInfoLines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Files/Arm Info.txt"));
             foreach (var line in helmetInfoLines) _helmetInfos.Add(HelmetInfo.Parse(line));
             foreach (var line in armInfoLines) _armInfos.Add(ArmInfo.Parse(line));
 
             // Then get localization info for things like arms and torso selection (To display Arms 0 - Arms 6 or whatever, instead of just the index)
-            var partsLoc = GetLocalizationFile("Part Types");
+            var partsLoc = GetLocalizationsByCultureInfo(CultureInfo.CurrentCulture, "Part Types");
             foreach (var partLoc in partsLoc)
                 _templates.Where(t => t.PartType == partLoc.Key).ToList().ForEach(t => t.PartTypeLocalized = partLoc.Value);
         }
 
-        private Dictionary<string, string> GetLocalizationFile(string fileName)
+        private static Dictionary<string, string> GetLocalizationsByCultureInfo(CultureInfo ci, params string[] files)
         {
-            string fileNoExt = Path.GetFileNameWithoutExtension(fileName);
-            
-            // See if our current culture (or its parent) exists as a localization file in the same directory. Fallback to English
-            var currentLanguage = CultureInfo.CurrentCulture;
-            string locFileName = Path.Combine(Environment.CurrentDirectory, "Files/Localization", $"{fileNoExt}_{currentLanguage.Name}.txt");
-            if (!File.Exists(locFileName) && !string.IsNullOrWhiteSpace(currentLanguage.Parent?.Name))
-                locFileName = Path.Combine(Environment.CurrentDirectory, "Files/Localization", $"{fileNoExt}_{currentLanguage.Parent.Name}.txt");
-            if (!File.Exists(locFileName))
-                locFileName = Path.Combine(Environment.CurrentDirectory, "Files/Localization", $"{fileNoExt}_en.txt");
+            var combinedLocalizations = new List<KeyValuePair<string, string>>();
+            string fileNoExt, locFileName;
 
-            return File.Exists(locFileName) ? File.ReadAllLines(locFileName).ToDictionary(l => l.Split('=')[0], l => l.Split('=')[1]) : new Dictionary<string, string>();
+            foreach (var file in files)
+            {
+                // See if our current culture (or its parent) exists as a localization file in the same directory. Fallback to English
+                fileNoExt = Path.GetFileNameWithoutExtension(file);
+
+                locFileName = Path.Combine(Environment.CurrentDirectory, "Files/Localization", $"{fileNoExt}_{ci.Name}.txt");
+                if (!File.Exists(locFileName) && !string.IsNullOrWhiteSpace(ci.Parent?.Name))
+                    locFileName = Path.Combine(Environment.CurrentDirectory, "Files/Localization", $"{fileNoExt}_{ci.Parent.Name}.txt");
+                if (!File.Exists(locFileName))
+                    locFileName = Path.Combine(Environment.CurrentDirectory, "Files/Localization", $"{fileNoExt}_en.txt");
+
+                var lineList = File.Exists(locFileName) ? File.ReadAllLines(locFileName).Select(l => new KeyValuePair<string, string>(l.Split('=')[0], l.Split('=')[1])).ToList() : new List<KeyValuePair<string, string>>();
+                combinedLocalizations.AddRange(lineList);
+            }
+
+            // Ensure there are no duplicate keys before converting to a dictionary
+            return combinedLocalizations.GroupBy(g => g.Key).Select(g => g.First()).ToDictionary(cl => cl.Key, cl => cl.Value);
         }
     }
 }

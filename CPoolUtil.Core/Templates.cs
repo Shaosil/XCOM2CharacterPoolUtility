@@ -40,7 +40,7 @@ namespace CPoolUtil.Core
             return new Template
             {
                 Name = templateName,
-                Display = localization.ContainsKey(templateName) ? localization[templateName] : string.Empty,
+                Display = localization.ContainsKey(templateName) ? localization[templateName] : templateName,
                 Gender = parts.ContainsKey("Gender") ? parts["Gender"] : null,
                 Race = parts.ContainsKey("Race") ? parts["Race"] : null,
                 Language = parts.ContainsKey("Language") ? parts["Language"] : null,

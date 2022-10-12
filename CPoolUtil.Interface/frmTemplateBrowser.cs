@@ -1,6 +1,7 @@
 ﻿using CPoolUtil.Core;
 using FastMember;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
@@ -11,7 +12,6 @@ namespace CPoolUtil.Interface
     public partial class frmTemplateBrowser : Form
     {
         private BindingSource templateBs = new BindingSource();
-        private Overlord _overlord;
 
         public frmTemplateBrowser()
         {
@@ -20,11 +20,10 @@ namespace CPoolUtil.Interface
 
         private void frmTemplateBrowser_Load(object sender, EventArgs e)
         {
-            _overlord = new Overlord();
-            _overlord.LoadCustomizationTemplates();
+            Overlord.LoadCustomizationTemplates();
 
             var dt = new DataTable();
-            using (var reader = ObjectReader.Create(_overlord.Templates))
+            using (var reader = ObjectReader.Create(Overlord.Templates))
                 dt.Load(reader);
             dt.Columns["Display"].SetOrdinal(0);
             dt.Columns["Name"].SetOrdinal(1);
@@ -78,15 +77,15 @@ namespace CPoolUtil.Interface
                 AND ('{bool.TrueString}' = '{string.IsNullOrWhiteSpace(txtOrigin.Text)}' OR Origin LIKE '%{txtOrigin.Text}%')
 
                 AND ('{bool.TrueString}' = '{chkIncludeVanilla.Checked}' OR Origin <> 'Vanilla')
-                AND ('{bool.TrueString}' = '{_overlord.DlcAndModOptions.Contains("WotC")}' OR Origin <> 'WotC')
-                AND ('{bool.TrueString}' = '{_overlord.DlcAndModOptions.Contains("Tactical Legacy Pack")}' OR Origin <> 'Tactical Legacy Pack')
-                AND ('{bool.TrueString}' = '{_overlord.DlcAndModOptions.Contains("Anarchy's Children")}' OR Origin <> 'Anarchy''s Children')
-                AND ('{bool.TrueString}' = '{_overlord.DlcAndModOptions.Contains("Alien Hunters")}' OR Origin <> 'Alien Hunters')
-                AND ('{bool.TrueString}' = '{_overlord.DlcAndModOptions.Contains("Shen's Last Gift")}' OR Origin <> 'Shen''s Last Gift')
-                AND ('{bool.TrueString}' = '{_overlord.DlcAndModOptions.Contains("Resistance Warrior Pack")}' OR Origin <> 'Resistance Warrior Pack')
-                AND ('{bool.TrueString}' = '{_overlord.DlcAndModOptions.Contains("CapnBubs Accessories")}' OR Origin <> 'CapnBubs Accessories')
-                AND ('{bool.TrueString}' = '{_overlord.DlcAndModOptions.Contains("Female Hair Pack")}' OR Origin <> 'Female Hair Pack')
-                AND ('{bool.TrueString}' = '{_overlord.DlcAndModOptions.Contains("Male Hair Pack")}' OR Origin <> 'Male Hair Pack')";
+                AND ('{bool.TrueString}' = '{Overlord.DlcAndModOptions.Contains("WotC")}' OR Origin <> 'WotC')
+                AND ('{bool.TrueString}' = '{Overlord.DlcAndModOptions.Contains("Tactical Legacy Pack")}' OR Origin <> 'Tactical Legacy Pack')
+                AND ('{bool.TrueString}' = '{Overlord.DlcAndModOptions.Contains("Anarchy's Children")}' OR Origin <> 'Anarchy''s Children')
+                AND ('{bool.TrueString}' = '{Overlord.DlcAndModOptions.Contains("Alien Hunters")}' OR Origin <> 'Alien Hunters')
+                AND ('{bool.TrueString}' = '{Overlord.DlcAndModOptions.Contains("Shen's Last Gift")}' OR Origin <> 'Shen''s Last Gift')
+                AND ('{bool.TrueString}' = '{Overlord.DlcAndModOptions.Contains("Resistance Warrior Pack")}' OR Origin <> 'Resistance Warrior Pack')
+                AND ('{bool.TrueString}' = '{Overlord.DlcAndModOptions.Contains("CapnBubs Accessories")}' OR Origin <> 'CapnBubs Accessories')
+                AND ('{bool.TrueString}' = '{Overlord.DlcAndModOptions.Contains("Female Hair Pack")}' OR Origin <> 'Female Hair Pack')
+                AND ('{bool.TrueString}' = '{Overlord.DlcAndModOptions.Contains("Male Hair Pack")}' OR Origin <> 'Male Hair Pack')";
 
             templateBs.Filter = str;
         }
@@ -99,12 +98,9 @@ namespace CPoolUtil.Interface
 
         private void btnChooseDlcsMods_Click(object sender, EventArgs e)
         {
-            var optionsForm = new frmPoolDlcModOptions(_overlord.DlcAndModOptions, null);
+            var optionsForm = new frmPoolDlcModOptions(null);
             if (optionsForm.ShowDialog() == DialogResult.OK)
-            {
-                _overlord.DlcAndModOptions = optionsForm.SelectedOptions;
                 ApplyFilter();
-            }
         }
 
         private void chkIncludeVanilla_CheckedChanged(object sender, EventArgs e)
