@@ -2,17 +2,18 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
     <RootNamespace>CPoolUtil.Interface</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>XCOM 2 Character Pool Utility</AssemblyName>
     <StartupObject>CPoolUtil.Interface.Program</StartupObject>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.1</AssemblyVersion>
+    <Version>1.1.1</Version>
     <Authors>Shaosil</Authors>
     <Product>CPoolUtil</Product>
     <PackageId>XCOM 2 Character Pool Utility</PackageId>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -25,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="FastMember" Version="1.5.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>

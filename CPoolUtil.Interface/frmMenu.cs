@@ -4,12 +4,14 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace CPoolUtil.Interface
 {
     public partial class frmMenu : Form
     {
+        private static string currentVersion;
         private static readonly HttpClient updateCheckerClient = new HttpClient(new HttpClientHandler { Proxy = null, UseProxy = false });
         private IOutputter _outputter = new NullOutputter();
 
@@ -17,7 +19,10 @@ namespace CPoolUtil.Interface
         {
             InitializeComponent();
 
-            lblVersion.Text = $"v{Application.ProductVersion}";
+            // Initialize version (Major, minor, build - leave out revision)
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            currentVersion = $"{version.Major}.{version.Minor}.{version.Build}";
+            lblVersion.Text = $"v{currentVersion}";
 
             // Silently check for updates on load
             updateCheckerClient.DefaultRequestHeaders.Add("User-Agent", "Other");
@@ -75,7 +80,7 @@ namespace CPoolUtil.Interface
                         throw new Exception("Current version info not found.");
 
                     // Parse it out and compare it to our current version
-                    var ourVersionInfo = ParseVersion(Application.ProductVersion);
+                    var ourVersionInfo = ParseVersion(currentVersion);
                     var latestVersionInfo = ParseVersion(latestTag);
 
                     for (int i = 0; i < ourVersionInfo.Length; i++)
