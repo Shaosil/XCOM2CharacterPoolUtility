@@ -1,12 +1,11 @@
-﻿using CPoolUtil.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using CPoolUtil.Core;
 
 namespace CPoolUtil.Interface
 {
@@ -47,48 +46,45 @@ namespace CPoolUtil.Interface
 
         private void LoadPools(string[] fileNames)
         {
-            var worker = new BackgroundWorker();
-            worker.DoWork += (s, e) =>
+            lblFormStatus.Text = "Loading... (0%)";
+            ToggleCommonControls(false);
+
+            // Manually load files so we can handle potential duplicate soldiers
+            for (int i = 0; i < fileNames.Length; i++)
             {
-                Invoke((MethodInvoker)delegate
+                _currentFile = Path.GetFileName(fileNames[i]);
+                _appendingPool = new CPool(new Parser(fileNames[i], _outputter), _outputter);
+                _appendingPool.SendProgressUpdateEvent += (progress) =>
                 {
-                    lblFormStatus.Text = "Loading... (0%)";
-                    ToggleCommonControls(false);
-                });
-
-                // Manually load files so we can handle potential duplicate soldiers
-                for (int i = 0; i < fileNames.Length; i++)
-                {
-                    _currentFile = Path.GetFileName(fileNames[i]);
-                    _appendingPool = new CPool(new Parser(fileNames[i], _outputter), _outputter);
-                    _appendingPool.SendProgressUpdateEvent += (progress) =>
+                    // Progress update event handler
+                    if (progress < 100)
+                        lblFormStatus.Text = $"Loading {_currentFile}... ({progress}%)";
+                    else
                     {
-                        // Progress update event handler
-                        if (progress < 100)
-                            lblFormStatus.Invoke((MethodInvoker)delegate { lblFormStatus.Text = $"Loading {_currentFile}... ({progress}%)"; });
-                        else
-                        {
-                            Overlord.AppendPool(_appendingPool);
+                        Overlord.AppendPool(_appendingPool);
 
-                            // Subscribe to our duplicate characters ignored event handler if this is the first time we load a pool
-                            if (Overlord.CharacterPool == _appendingPool)
-                                Overlord.CharacterPool.DuplicateCharactersIgnoredEvent += DuplicateCharactersIgnored_EventHandler;
+                        // Subscribe to our duplicate characters ignored event handler if this is the first time we load a pool
+                        if (Overlord.CharacterPool == _appendingPool)
+                            Overlord.CharacterPool.DuplicateCharactersIgnoredEvent += DuplicateCharactersIgnored_EventHandler;
 
-                            // Make a thread safe call to our GUI components
-                            Invoke((MethodInvoker)delegate
-                            {
-                                DetectDlcsAndMods(Program.Settings.ShowWarnings);
-                                UpdateDirtyStatus();
-                                RefreshCharacterListDataSource();
-                                ToggleCommonControls(true);
-                            });
-                        }
-                    };
+                        // Update our GUI components
+                        DetectDlcsAndMods(Program.Settings.ShowWarnings);
+                        UpdateDirtyStatus();
+                        RefreshCharacterListDataSource();
+                        ToggleCommonControls(true);
+                    }
+                };
 
+                try
+                {
                     _appendingPool.Load();
                 }
-            };
-            worker.RunWorkerAsync();
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error while loading character pool! {ex}", "Exception Thrown", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Close();
+                }
+            }
         }
 
         private List<string> DetectDlcsAndMods(bool displayMessage = false)
@@ -374,7 +370,7 @@ namespace CPoolUtil.Interface
 
         private void frmPoolEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Overlord.CharacterPool.IsDirty
+            if ((Overlord.CharacterPool?.IsDirty ?? false)
             && MessageBox.Show("You will lose your unsaved changes if you close this window. Are you sure you want to close it?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning) != DialogResult.Yes)
                 e.Cancel = true;
         }
@@ -674,7 +670,7 @@ namespace CPoolUtil.Interface
             setData(newVal);
 
             // Don't mark edited for replacing -1s with 0s or nulls with "None"s
-            return !(oldVal is int oInt && oInt == -1 && newVal is int nInt && nInt == 0) 
+            return !(oldVal is int oInt && oInt == -1 && newVal is int nInt && nInt == 0)
                 && !(oldVal == null && newVal is string nStr && nStr == "None");
         }
 

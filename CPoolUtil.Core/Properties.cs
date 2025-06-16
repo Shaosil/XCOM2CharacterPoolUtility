@@ -163,17 +163,23 @@ namespace CPoolUtil.Core
     // Data = ASCII(?) encoded text block
     public class StrProperty : CProperty
     {
-        private StrProperty(string name, string newValue) : base(name, null)
+        protected int DataLength;
+
+        protected StrProperty(string name, string newValue) : base(name, null)
         {
             Data = newValue;
         }
 
-        public StrProperty(string name, Parser parser) : base(name, parser) { }
+        public StrProperty(int dataLength, string name, Parser parser) : base(name, parser)
+        {
+            DataLength = dataLength;
+        }
 
         public override void ParseData()
         {
-            // The actual size is now available to read
-            int actualSize = Parser.GetInt();
+            // The actual size is the data length - 4, to account for the extra potential size definition
+            int actualSize = DataLength - 4;
+            Parser.GetInt();
             Data = Parser.GetString(actualSize);
         }
 
@@ -199,13 +205,7 @@ namespace CPoolUtil.Core
             Data = newValue;
         }
 
-        public NameProperty(string name, Parser parser) : base(name, parser) { }
-
-        public override void ParseData()
-        {
-            base.ParseData();
-            Parser.SkipPadding(); // Extra padding at the end of this property type
-        }
+        public NameProperty(int dataLength, string name, Parser parser) : base(dataLength, name, parser) { }
 
         public new static NameProperty Create(string name, string value = null)
         {
@@ -323,7 +323,7 @@ namespace CPoolUtil.Core
         {
             properties = pProperties.ToList();
         }
-        
+
         public PropertyBag(Parser parser, IOutputter outputter)
         {
             _parser = parser;

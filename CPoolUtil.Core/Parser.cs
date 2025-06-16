@@ -37,6 +37,10 @@ namespace CPoolUtil.Core
         {
             var subArray = ReadBytes(4);
 
+            // Some pools use FF instaed of 00, which will cause issues when converting to an int
+            for (int i = 0; i < subArray.Length; i++)
+                if (subArray[i] == 0xFF) subArray[i] = 0;
+
             // If our current environment is not Little Endian, reverse the array before converting
             if (!BitConverter.IsLittleEndian)
                 Array.Reverse(subArray);
@@ -49,7 +53,8 @@ namespace CPoolUtil.Core
             // Strings seem to be encoded in Windows 1252 (superset of Western European (ISO))
             var subArray = ReadBytes(length);
             var encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252);
-            return encoding.GetString(subArray.Take(subArray.Length - 1).ToArray()).Replace("\r", Environment.NewLine); // Strip out the null terminating byte and encode line feeds
+
+            return encoding.GetString(subArray.Where(b => b != '\0').ToArray()).Replace("\r", Environment.NewLine); // Strip out any null terminating bytes and encode line feeds
         }
 
         public CProperty GetProperty()
@@ -67,8 +72,8 @@ namespace CPoolUtil.Core
             string typeName = GetString(typeNameLength);
             SkipPadding();
 
-            // Skip past the size of the following data and its padding
-            GetInt();
+            // The rest of the structure SHOULD be as follows: [int (length of final 2 pieces)]-[padding]-[int (length of data)]-[data], but may not be, so go by the first int for some property types
+            int dataLength = GetInt();
             SkipPadding();
 
             // Finally, read the data based on the property type
@@ -84,11 +89,11 @@ namespace CPoolUtil.Core
                     break;
 
                 case "StrProperty":
-                    returnProperty = new StrProperty(propName, this);
+                    returnProperty = new StrProperty(dataLength, propName, this);
                     break;
 
                 case "NameProperty":
-                    returnProperty = new NameProperty(propName, this);
+                    returnProperty = new NameProperty(dataLength, propName, this);
                     break;
 
                 case "StructProperty":
