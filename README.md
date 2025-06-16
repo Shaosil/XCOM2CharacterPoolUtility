@@ -2,7 +2,7 @@
 A standalone tool to create characters, merge pools, and customize any options available from XCOM 2's character pool screens. Supports several popular mods
 
 TO INSTALL
-* Ensure you have the .NET Desktop Runtime 8.0 installed. <a href="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.0-windows-x64-installer">Download from Microsoft here</a>
+* Ensure you have the .NET Desktop Runtime 9.0 installed. <a href="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.6-windows-x64-installer">Download from Microsoft here</a>
 * Download this program's latest release <a href="https://github.com/Shaosil/XCOM2CharacterPoolUtility/releases/latest">here</a> and extract it to a folder
 * Run XCOM 2 Character Pool Utility.exe
 

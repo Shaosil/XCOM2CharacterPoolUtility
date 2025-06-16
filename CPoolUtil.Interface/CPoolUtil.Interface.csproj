@@ -2,18 +2,18 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
     <RootNamespace>CPoolUtil.Interface</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>XCOM 2 Character Pool Utility</AssemblyName>
     <StartupObject>CPoolUtil.Interface.Program</StartupObject>
-    <AssemblyVersion>1.1.1</AssemblyVersion>
-    <Version>1.1.1</Version>
+    <AssemblyVersion>1.1.2</AssemblyVersion>
+    <Version>1.1.2</Version>
     <Authors>Shaosil</Authors>
     <Product>CPoolUtil</Product>
     <PackageId>XCOM 2 Character Pool Utility</PackageId>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
-    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
